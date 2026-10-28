@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}{{ student.name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+  <div class="d-flex align-items-center gap-3">
+    <div class="avatar-circle">{{ student.name[0]|upper }}</div>
+    <div>
+      <h2 class="h3 mb-0">{{ student.name }}</h2>
+      <p class="text-muted mb-0">{{ student.student_id }}{% if student.roll_number %} &middot; {{ student.roll_number }}{% endif %}</p>
+    </div>
+  </div>
+  {% if admin_view %}
+  <div class="d-flex gap-2">
+    <a href="{{ url_for('admin_edit_student', sid=student.id) }}" class="btn btn-primary btn-sm"><i class="bi bi-pencil-fill"></i> Edit</a>
+    <a href="{{ url_for('admin_students') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> Back</a>
+  </div>
+  {% endif %}
+</div>
+
+<div class="row g-3">
+  <!-- Personal -->
+  <div class="col-lg-6">
+    <div class="card shadow-sm h-100">
+      <div class="card-header bg-primary text-white fw-semibold"><i class="bi bi-person-fill"></i> Personal Information</div>
+      <ul class="list-group list-group-flush">
+        {% macro row(label, value) %}<li class="list-group-item d-flex justify-content-between"><span class="text-muted">{{ label }}</span><strong>{{ value or '—' }}</strong></li>{% endmacro %}
+        {{ row("Student ID",   student.student_id) }}
+        {{ row("Roll Number",  student.roll_number) }}
+        {{ row("Full Name",    student.name) }}
+        {{ row("Email",        student.email) }}
+        {{ row("Phone",        student.phone) }}
+        {{ row("Date of Birth", student.dob.strftime('%d %b %Y') if student.dob else None) }}
+        {{ row("Gender",       student.gender) }}
+        <li class="list-group-item"><span class="text-muted">Address</span><br><small>{{ student.address or '—' }}</small></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Academic -->
+  <div class="col-lg-6">
+    <div class="card shadow-sm h-100">
+      <div class="card-header bg-success text-white fw-semibold"><i class="bi bi-journal-bookmark-fill"></i> Academic Details</div>
+      <ul class="list-group list-group-flush">
+        {{ row("Department",  student.department) }}
+        {{ row("Course",      student.course) }}
+        {{ row("Year",        "Year " ~ student.year if student.year else None) }}
+        {{ row("Semester",    "Sem " ~ student.semester if student.semester else None) }}
+        {{ row("Section",     student.section) }}
+        <li class="list-group-item d-flex justify-content-between">
+          <span class="text-muted">CGPA</span>
+          <strong>{{ student.cgpa if student.cgpa is not none else '—' }}</strong>
+        </li>
+        <li class="list-group-item d-flex justify-content-between">
+          <span class="text-muted">Backlogs</span>
+          <span class="badge {% if student.backlogs > 0 %}bg-danger{% else %}bg-success{% endif %}">{{ student.backlogs }}</span>
+        </li>
+        {% if student.backlog_details %}
+        <li class="list-group-item"><span class="text-muted">Backlog Details</span><br><small>{{ student.backlog_details }}</small></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+
+  <!-- Attendance -->
+  <div class="col-lg-6">
+    <div class="card shadow-sm">
+      <div class="card-header bg-info text-white fw-semibold"><i class="bi bi-calendar-check-fill"></i> Attendance</div>
+      <div class="card-body">
+        {% if student.attendance_pct is not none %}
+          <div class="d-flex align-items-center gap-3 mb-2">
+            <div class="fs-3 fw-bold {% if student.attendance_pct < 75 %}text-danger{% else %}text-success{% endif %}">
+              {{ student.attendance_pct }}%
+            </div>
+            {% if student.attendance_pct < 75 %}
+              <span class="badge bg-danger fs-6"><i class="bi bi-exclamation-triangle-fill"></i> Attendance Shortage</span>
+            {% else %}
+              <span class="badge bg-success fs-6"><i class="bi bi-check-circle-fill"></i> Good Standing</span>
+            {% endif %}
+          </div>
+          <div class="progress" style="height:12px;">
+            <div class="progress-bar {% if student.attendance_pct < 75 %}bg-danger{% else %}bg-success{% endif %}"
+                 style="width:{{ student.attendance_pct }}%"></div>
+          </div>
+        {% else %}
+          <p class="text-muted mb-0">No attendance data recorded.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Fee -->
+  <div class="col-lg-6">
+    <div class="card shadow-sm">
+      <div class="card-header bg-warning text-dark fw-semibold"><i class="bi bi-cash-coin"></i> Fee Details</div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item d-flex justify-content-between"><span class="text-muted">Total Fee</span><strong>₹{{ "%.2f"|format(student.total_fee|float) }}</strong></li>
+        <li class="list-group-item d-flex justify-content-between"><span class="text-muted">Amount Paid</span><strong class="text-success">₹{{ "%.2f"|format(student.amount_paid|float) }}</strong></li>
+        <li class="list-group-item d-flex justify-content-between"><span class="text-muted">Amount Due</span><strong class="text-danger">₹{{ "%.2f"|format(student.amount_due|float) }}</strong></li>
+        <li class="list-group-item d-flex justify-content-between">
+          <span class="text-muted">Payment Status</span>
+          {% set sc = {'Fully Paid':'success','Half Paid':'warning','Partially Paid':'info','Due':'danger','Pending':'secondary'} %}
+          <span class="badge bg-{{ sc.get(student.payment_status,'secondary') }} fs-6">{{ student.payment_status }}</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

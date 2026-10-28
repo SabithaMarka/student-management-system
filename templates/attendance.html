@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}{% if mode == 'admin' %}Manage Attendance{% else %}My Attendance{% endif %}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+  <h1 class="h3 mb-0">{% if mode == 'admin' %}Attendance Records{% else %}My Attendance{% endif %}</h1>
+  {% if mode == 'admin' %}
+    <a href="{{ url_for('admin_add_attendance') }}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Add Record</a>
+  {% else %}
+    {% if overall is defined %}
+      <span class="badge fs-6 {% if overall < 75 %}bg-danger{% else %}bg-success{% endif %}">Overall: {{ overall }}%</span>
+    {% endif %}
+  {% endif %}
+</div>
+
+{% if mode == 'student' and overall is defined and overall < 75 %}
+  <div class="alert alert-danger"><i class="bi bi-exclamation-triangle-fill"></i>
+    <strong>Low Attendance Warning!</strong> Your overall attendance is <strong>{{ overall }}%</strong>, which is below the required 75%. Please attend classes regularly.
+  </div>
+{% endif %}
+
+{% if db_error %}<div class="alert alert-danger">{{ db_error }}</div>{% endif %}
+
+<div class="card shadow-sm">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            {% if mode == 'admin' %}<th>Student</th>{% endif %}
+            <th>Subject</th><th>Total</th><th>Present</th><th>Attendance %</th>
+            {% if mode == 'admin' %}<th class="text-end">Actions</th>{% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in records %}
+          <tr>
+            {% if mode == 'admin' %}
+            <td>{{ r.student_name }}<br><small class="text-muted">{{ r.student_id }}</small></td>
+            {% endif %}
+            <td><span class="badge bg-primary">{{ r.subject_code }}</span> {{ r.subject_name }}</td>
+            <td>{{ r.total_classes }}</td>
+            <td>{{ r.present_classes }}</td>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <div class="progress flex-grow-1" style="height:8px; min-width:60px;">
+                  <div class="progress-bar {% if r.percentage >= 75 %}bg-success{% elif r.percentage >= 60 %}bg-warning{% else %}bg-danger{% endif %}"
+                       style="width:{{ r.percentage }}%"></div>
+                </div>
+                <span class="badge {% if r.percentage >= 75 %}bg-success{% elif r.percentage >= 60 %}bg-warning{% else %}bg-danger{% endif %}">{{ r.percentage }}%</span>
+                {% if mode == 'student' and r.low %}<span class="badge bg-danger ms-1">Low</span>{% endif %}
+              </div>
+            </td>
+            {% if mode == 'admin' %}
+            <td class="text-end text-nowrap">
+              <a href="{{ url_for('admin_edit_attendance', record_id=r.id) }}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></a>
+              <form class="confirm-delete d-inline" method="post" action="{{ url_for('admin_delete_attendance', record_id=r.id) }}">
+                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+              </form>
+            </td>
+            {% endif %}
+          </tr>
+          {% else %}
+          <tr><td colspan="6" class="text-center text-muted py-4"><i class="bi bi-inbox fs-2 d-block mb-2"></i>No attendance records found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}College Student Management System{% endblock %}
+{% block content %}
+<section class="hero rounded-3 p-5 mb-5">
+  <div class="row align-items-center">
+    <div class="col-lg-7">
+      <h1 class="display-5 fw-bold mb-3">College Student Management System</h1>
+      <p class="lead mb-4">
+        A centralized system for administrators to manage complete student information
+        and for students to securely view their academic and administrative details.
+      </p>
+      <div class="d-flex flex-wrap gap-3">
+        <a href="{{ url_for('admin_login') }}" class="btn btn-warning btn-lg fw-semibold">
+          <i class="bi bi-shield-lock-fill"></i> Admin Login
+        </a>
+        <a href="{{ url_for('student_login') }}" class="btn btn-light btn-lg text-primary fw-semibold">
+          <i class="bi bi-box-arrow-in-right"></i> Student Login
+        </a>
+        <a href="{{ url_for('register') }}" class="btn btn-outline-light btn-lg">
+          <i class="bi bi-person-plus"></i> Student Registration
+        </a>
+      </div>
+    </div>
+    <div class="col-lg-5 text-center d-none d-lg-block">
+      <i class="bi bi-mortarboard-fill" style="font-size:11rem;opacity:.85;"></i>
+    </div>
+  </div>
+</section>
+
+<div class="row g-4">
+  <div class="col-md-4">
+    <div class="card h-100 text-center p-4 shadow-sm">
+      <i class="bi bi-shield-lock-fill fs-1 text-warning mb-3"></i>
+      <h4>Admin Portal</h4>
+      <p class="text-muted">Manage all student records — personal details, academics, attendance, CGPA, backlogs, fee and more.</p>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100 text-center p-4 shadow-sm">
+      <i class="bi bi-person-circle fs-1 text-primary mb-3"></i>
+      <h4>Student Portal</h4>
+      <p class="text-muted">Students securely log in and view their own academic profile, attendance, marks, backlogs and fee status.</p>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100 text-center p-4 shadow-sm">
+      <i class="bi bi-lock-fill fs-1 text-success mb-3"></i>
+      <h4>Secure & Role-based</h4>
+      <p class="text-muted">Role-based access ensures students can only see their own data and cannot modify any information.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

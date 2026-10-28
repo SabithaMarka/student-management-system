@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}My Dashboard{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+  <div>
+    <h1 class="h3 mb-0">Welcome, {{ s.name }}!</h1>
+    <p class="text-muted mb-0">Here is your academic and administrative overview.</p>
+  </div>
+  <a href="{{ url_for('student_profile') }}" class="btn btn-outline-primary btn-sm">
+    <i class="bi bi-person-lines-fill"></i> View Full Profile
+  </a>
+</div>
+
+<!-- Key info cards -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-4 col-lg-3">
+    <div class="info-card border-primary">
+      <div class="info-card-label">Student ID</div>
+      <div class="info-card-value text-primary">{{ s.student_id }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4 col-lg-3">
+    <div class="info-card border-secondary">
+      <div class="info-card-label">Roll Number</div>
+      <div class="info-card-value">{{ s.roll_number or '—' }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4 col-lg-3">
+    <div class="info-card border-success">
+      <div class="info-card-label">Department</div>
+      <div class="info-card-value text-success" style="font-size:1rem;">{{ s.department }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4 col-lg-3">
+    <div class="info-card border-info">
+      <div class="info-card-label">Year / Semester</div>
+      <div class="info-card-value text-info">Yr {{ s.year }}{% if s.semester %} / Sem {{ s.semester }}{% endif %}</div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <!-- CGPA card -->
+  <div class="col-md-3 col-6">
+    <div class="card shadow-sm text-center p-3">
+      <i class="bi bi-award-fill fs-2 text-warning mb-1"></i>
+      <div class="fs-2 fw-bold">{{ s.cgpa if s.cgpa is not none else '—' }}</div>
+      <small class="text-muted text-uppercase">CGPA</small>
+    </div>
+  </div>
+  <!-- Attendance card -->
+  <div class="col-md-3 col-6">
+    <div class="card shadow-sm text-center p-3 {% if s.attendance_pct is not none and s.attendance_pct < 75 %}border-danger{% endif %}">
+      <i class="bi bi-calendar-check-fill fs-2 {% if s.attendance_pct is not none and s.attendance_pct < 75 %}text-danger{% else %}text-success{% endif %} mb-1"></i>
+      <div class="fs-2 fw-bold {% if s.attendance_pct is not none and s.attendance_pct < 75 %}text-danger{% else %}text-success{% endif %}">
+        {{ s.attendance_pct ~ '%' if s.attendance_pct is not none else '—' }}
+      </div>
+      <small class="text-muted text-uppercase">Attendance</small>
+      {% if s.attendance_pct is not none and s.attendance_pct < 75 %}
+        <span class="badge bg-danger mt-1"><i class="bi bi-exclamation-triangle-fill"></i> Shortage</span>
+      {% endif %}
+    </div>
+  </div>
+  <!-- Backlogs card -->
+  <div class="col-md-3 col-6">
+    <div class="card shadow-sm text-center p-3 {% if s.backlogs > 0 %}border-danger{% endif %}">
+      <i class="bi bi-exclamation-triangle-fill fs-2 {% if s.backlogs > 0 %}text-danger{% else %}text-success{% endif %} mb-1"></i>
+      <div class="fs-2 fw-bold {% if s.backlogs > 0 %}text-danger{% else %}text-success{% endif %}">{{ s.backlogs }}</div>
+      <small class="text-muted text-uppercase">Backlogs</small>
+    </div>
+  </div>
+  <!-- Fee card -->
+  <div class="col-md-3 col-6">
+    {% set sc = {'Fully Paid':'success','Half Paid':'warning','Partially Paid':'info','Due':'danger','Pending':'secondary'} %}
+    <div class="card shadow-sm text-center p-3">
+      <i class="bi bi-cash-coin fs-2 text-{{ sc.get(s.payment_status,'secondary') }} mb-1"></i>
+      <div class="fw-bold" style="font-size:1.1rem;">{{ s.payment_status }}</div>
+      <small class="text-muted text-uppercase">Fee Status</small>
+      {% if s.amount_due and s.amount_due > 0 %}
+        <div class="text-danger small">Due: ₹{{ "%.0f"|format(s.amount_due|float) }}</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Details summary -->
+<div class="row g-3">
+  <div class="col-md-6">
+    <div class="card shadow-sm h-100">
+      <div class="card-header bg-white fw-semibold"><i class="bi bi-person-lines-fill text-primary"></i> My Details</div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item d-flex justify-content-between"><span class="text-muted">Full Name</span><strong>{{ s.name }}</strong></li>
+        <li class="list-group-item d-flex justify-content-between"><span class="text-muted">Email</span><strong>{{ s.email }}</strong></li>
+        <li class="list-group-item d-flex justify-content-between"><span class="text-muted">Phone</span><strong>{{ s.phone }}</strong></li>
+        <li class="list-group-item d-flex justify-content-between"><span class="text-muted">Course</span><strong>{{ s.course or '—' }}</strong></li>
+        <li class="list-group-item d-flex justify-content-between"><span class="text-muted">Section</span><strong>{{ s.section or '—' }}</strong></li>
+      </ul>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card shadow-sm h-100">
+      <div class="card-header bg-white fw-semibold"><i class="bi bi-cash-coin text-warning"></i> Fee Summary</div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item d-flex justify-content-between"><span class="text-muted">Total Fee</span><strong>₹{{ "%.2f"|format(s.total_fee|float) }}</strong></li>
+        <li class="list-group-item d-flex justify-content-between"><span class="text-muted">Amount Paid</span><strong class="text-success">₹{{ "%.2f"|format(s.amount_paid|float) }}</strong></li>
+        <li class="list-group-item d-flex justify-content-between"><span class="text-muted">Amount Due</span><strong class="text-danger">₹{{ "%.2f"|format(s.amount_due|float) }}</strong></li>
+        <li class="list-group-item d-flex justify-content-between">
+          <span class="text-muted">Status</span>
+          <span class="badge bg-{{ sc.get(s.payment_status,'secondary') }}">{{ s.payment_status }}</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+{% if s.backlogs > 0 and s.backlog_details %}
+<div class="alert alert-warning mt-3">
+  <i class="bi bi-exclamation-triangle-fill"></i>
+  <strong>Backlog Details:</strong> {{ s.backlog_details }}
+</div>
+{% endif %}
+
+<div class="alert alert-info mt-3 small mb-0">
+  <i class="bi bi-info-circle-fill"></i>
+  This information is managed by your college administrator. If you find any discrepancy, please contact the admin office.
+</div>
+{% endblock %}

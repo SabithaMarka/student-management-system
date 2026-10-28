@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}{{ heading }}{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-6">
+    <h1 class="h3 mb-3">{{ heading }}</h1>
+    <div class="card shadow-sm">
+      <div class="card-body">
+        {% for err in errors %}<div class="alert alert-danger py-2 small mb-2">{{ err }}</div>{% endfor %}
+        <form method="post" novalidate>
+          <div class="mb-3">
+            <label class="form-label">Student</label>
+            {% if is_edit %}
+              {% set sel = students | selectattr('id', 'equalto', form_data.student_id) | first %}
+              <input class="form-control" value="{{ sel.name if sel else form_data.student_id }}" disabled />
+            {% else %}
+              <select class="form-select" name="student_id" required>
+                <option value="">— Select student —</option>
+                {% for s in students %}<option value="{{ s.id }}" {% if form_data.student_id == s.id %}selected{% endif %}>{{ s.student_id }} — {{ s.name }}</option>{% endfor %}
+              </select>
+            {% endif %}
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Subject</label>
+            {% if is_edit %}
+              {% set sel = subjects | selectattr('id', 'equalto', form_data.subject_id) | first %}
+              <input class="form-control" value="{{ sel.name if sel else form_data.subject_id }}" disabled />
+            {% else %}
+              <select class="form-select" name="subject_id" required>
+                <option value="">— Select subject —</option>
+                {% for s in subjects %}<option value="{{ s.id }}" {% if form_data.subject_id == s.id %}selected{% endif %}>{{ s.code }} — {{ s.name }}</option>{% endfor %}
+              </select>
+            {% endif %}
+          </div>
+          <div class="row g-3">
+            <div class="col-4">
+              <label class="form-label">Internal (0-100)</label>
+              <input type="number" class="form-control" name="internal_marks" value="{{ form_data.internal_marks }}" min="0" max="100" required />
+            </div>
+            <div class="col-4">
+              <label class="form-label">Assignment (0-100)</label>
+              <input type="number" class="form-control" name="assignment_marks" value="{{ form_data.assignment_marks }}" min="0" max="100" required />
+            </div>
+            <div class="col-4">
+              <label class="form-label">Semester (0-100)</label>
+              <input type="number" class="form-control" name="semester_marks" value="{{ form_data.semester_marks }}" min="0" max="100" required />
+            </div>
+          </div>
+          <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> {{ submit_label }}</button>
+            <a href="{{ cancel_url }}" class="btn btn-outline-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

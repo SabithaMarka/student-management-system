@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+  <div>
+    <h1 class="h3 mb-0">Admin Dashboard</h1>
+    <p class="text-muted mb-0">Welcome back, <strong>{{ current_user.name }}</strong></p>
+  </div>
+  <a href="{{ url_for('admin_add_student') }}" class="btn btn-primary">
+    <i class="bi bi-person-plus-fill"></i> Add Student
+  </a>
+</div>
+
+<!-- Stat tiles -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-4 col-lg-2">
+    <div class="stat-tile bg-primary text-white">
+      <div class="stat-val">{{ total_students }}</div>
+      <div class="stat-lbl">Total Students</div>
+      <i class="bi bi-people-fill stat-ico"></i>
+    </div>
+  </div>
+  <div class="col-6 col-md-4 col-lg-2">
+    <div class="stat-tile bg-success text-white">
+      <div class="stat-val">{{ total_departments }}</div>
+      <div class="stat-lbl">Departments</div>
+      <i class="bi bi-building stat-ico"></i>
+    </div>
+  </div>
+  <div class="col-6 col-md-4 col-lg-2">
+    <div class="stat-tile bg-danger text-white">
+      <div class="stat-val">{{ with_backlogs }}</div>
+      <div class="stat-lbl">With Backlogs</div>
+      <i class="bi bi-exclamation-triangle-fill stat-ico"></i>
+    </div>
+  </div>
+  <div class="col-6 col-md-4 col-lg-2">
+    <div class="stat-tile bg-warning text-dark">
+      <div class="stat-val">{{ att_shortage }}</div>
+      <div class="stat-lbl">Att. Shortage</div>
+      <i class="bi bi-calendar-x-fill stat-ico"></i>
+    </div>
+  </div>
+  <div class="col-6 col-md-4 col-lg-2">
+    <div class="stat-tile bg-secondary text-white">
+      <div class="stat-val">{{ pending_fee }}</div>
+      <div class="stat-lbl">Pending Fee</div>
+      <i class="bi bi-cash-coin stat-ico"></i>
+    </div>
+  </div>
+  <div class="col-6 col-md-4 col-lg-2">
+    <div class="stat-tile bg-info text-white">
+      <div class="stat-val">{{ fully_paid }}</div>
+      <div class="stat-lbl">Fully Paid</div>
+      <i class="bi bi-check-circle-fill stat-ico"></i>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="card shadow-sm">
+  <div class="card-header bg-white fw-semibold"><i class="bi bi-grid text-primary"></i> Quick Actions</div>
+  <div class="card-body">
+    <div class="row g-3">
+      <div class="col-6 col-md-3"><a href="{{ url_for('admin_add_student') }}" class="btn btn-outline-primary w-100"><i class="bi bi-person-plus-fill"></i><br>Add Student</a></div>
+      <div class="col-6 col-md-3"><a href="{{ url_for('admin_students') }}" class="btn btn-outline-success w-100"><i class="bi bi-people-fill"></i><br>All Students</a></div>
+      <div class="col-6 col-md-3"><a href="{{ url_for('admin_students') }}?backlogs=yes" class="btn btn-outline-danger w-100"><i class="bi bi-exclamation-triangle-fill"></i><br>Backlog Students</a></div>
+      <div class="col-6 col-md-3"><a href="{{ url_for('admin_students') }}?fee_status=Pending" class="btn btn-outline-warning w-100"><i class="bi bi-cash-coin"></i><br>Pending Fee</a></div>
+    </div>
+  </div>
+</div>
+{% endblock %}

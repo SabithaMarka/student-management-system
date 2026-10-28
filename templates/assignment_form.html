@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}{{ heading }}{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <h1 class="h3 mb-3">{{ heading }}</h1>
+    <div class="card shadow-sm">
+      <div class="card-body">
+        {% for err in errors %}<div class="alert alert-danger py-2 small mb-2">{{ err }}</div>{% endfor %}
+        <form method="post" novalidate>
+          <div class="mb-3">
+            <label class="form-label" for="title">Title</label>
+            <input type="text" class="form-control" id="title" name="title" value="{{ form_data.title }}" required maxlength="150" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="description">Description</label>
+            <textarea class="form-control" id="description" name="description" rows="3" maxlength="2000">{{ form_data.description }}</textarea>
+          </div>
+          <div class="row g-3">
+            <div class="col-md-5">
+              <label class="form-label">Subject</label>
+              <select class="form-select" name="subject_id" required>
+                <option value="">— Select subject —</option>
+                {% for s in subjects %}
+                  <option value="{{ s.id }}" {% if form_data.subject_id == s.id %}selected{% endif %}>{{ s.code }} — {{ s.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label" for="due_date">Due Date</label>
+              <input type="date" class="form-control" id="due_date" name="due_date" value="{{ form_data.due_date }}" required />
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Status</label>
+              <select class="form-select" name="status">
+                {% for st in statuses %}
+                  <option value="{{ st }}" {% if form_data.status == st %}selected{% endif %}>{{ st | capitalize }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> {{ submit_label }}</button>
+            <a href="{{ cancel_url }}" class="btn btn-outline-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

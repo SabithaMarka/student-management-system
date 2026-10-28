@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}{% if mode == 'admin' %}Manage Marks{% else %}My Marks{% endif %}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+  <h1 class="h3 mb-0">{% if mode == 'admin' %}Marks Records{% else %}My Marks{% endif %}</h1>
+  {% if mode == 'admin' %}
+    <a href="{{ url_for('admin_add_marks') }}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Add Record</a>
+  {% else %}
+    <div class="d-flex gap-2">
+      {% if cgpa is not none %}
+        <span class="badge bg-warning text-dark fs-6">CGPA: {{ cgpa }}</span>
+        <span class="badge bg-primary fs-6">Overall: {{ overall_percentage }}%</span>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+{% if db_error %}<div class="alert alert-danger">{{ db_error }}</div>{% endif %}
+<div class="card shadow-sm">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            {% if mode == 'admin' %}<th>Student</th>{% endif %}
+            <th>Subject</th><th>Internal</th><th>Assignment</th><th>Semester</th><th>Total/300</th><th>%</th>
+            {% if mode == 'admin' %}<th class="text-end">Actions</th>{% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in records %}
+          <tr>
+            {% if mode == 'admin' %}
+            <td>{{ r.student_name }}<br><small class="text-muted">{{ r.student_id }}</small></td>
+            {% endif %}
+            <td><span class="badge bg-primary">{{ r.subject_code }}</span> {{ r.subject_name }}</td>
+            <td>{{ r.internal_marks }}</td>
+            <td>{{ r.assignment_marks }}</td>
+            <td>{{ r.semester_marks }}</td>
+            <td><strong>{{ r.total }}</strong></td>
+            <td>
+              <span class="badge {% if r.percentage >= 75 %}bg-success{% elif r.percentage >= 50 %}bg-warning{% else %}bg-danger{% endif %}">
+                {{ r.percentage }}%
+              </span>
+            </td>
+            {% if mode == 'admin' %}
+            <td class="text-end text-nowrap">
+              <a href="{{ url_for('admin_edit_marks', record_id=r.id) }}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></a>
+              <form class="confirm-delete d-inline" method="post" action="{{ url_for('admin_delete_marks', record_id=r.id) }}">
+                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+              </form>
+            </td>
+            {% endif %}
+          </tr>
+          {% else %}
+          <tr><td colspan="8" class="text-center text-muted py-4"><i class="bi bi-inbox fs-2 d-block mb-2"></i>No marks recorded yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

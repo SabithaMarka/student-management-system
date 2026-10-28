@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Admin Login{% endblock %}
+{% block content %}
+<div class="row justify-content-center mt-3">
+  <div class="col-md-5 col-lg-4">
+    <div class="card shadow-sm p-4">
+      <div class="text-center mb-3">
+        <i class="bi bi-shield-lock-fill text-warning" style="font-size:2.5rem;"></i>
+        <h3 class="mt-2 mb-0">Admin Login</h3>
+        <small class="text-muted">Administrator access only</small>
+      </div>
+      {% for e in errors %}<div class="alert alert-danger py-2 small">{{ e }}</div>{% endfor %}
+      <form method="post" novalidate>
+        <div class="mb-3">
+          <label class="form-label" for="identifier">Email or Username</label>
+          <input type="text" class="form-control" id="identifier" name="identifier"
+                 value="{{ identifier }}" autofocus required/>
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="password">Password</label>
+          <div class="input-group">
+            <input type="password" class="form-control" id="password" name="password" required/>
+            <button class="btn btn-outline-secondary" type="button" data-toggle-pw="password">
+              <i class="bi bi-eye"></i>
+            </button>
+          </div>
+        </div>
+        <div class="d-grid">
+          <button type="submit" class="btn btn-warning fw-semibold">
+            <i class="bi bi-shield-lock-fill"></i> Login as Admin
+          </button>
+        </div>
+      </form>
+      <hr class="my-3"/>
+      <div class="text-center small text-muted">
+        Student? <a href="{{ url_for('student_login') }}">Student Login</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+{% block title %}{{ heading }}{% endblock %}
+{% block content %}
+<h1 class="h3 mb-1">{{ heading }}</h1>
+<p class="text-muted mb-4">Fields marked <span class="text-danger">*</span> are required.</p>
+
+{% for e in errors %}<div class="alert alert-danger py-2 small mb-2">{{ e }}</div>{% endfor %}
+
+<form method="post" novalidate>
+  <!-- ── PERSONAL DETAILS ── -->
+  <div class="card shadow-sm mb-3">
+    <div class="card-header bg-primary text-white fw-semibold"><i class="bi bi-person-fill"></i> Personal Details</div>
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label">Student ID <span class="text-danger">*</span></label>
+          {% if is_edit is defined and is_edit %}
+            <input class="form-control" value="{{ fd.student_id }}" disabled/>
+          {% else %}
+            <input type="text" class="form-control" name="student_id" value="{{ fd.student_id }}" required/>
+          {% endif %}
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Roll Number</label>
+          <input type="text" class="form-control" name="roll_number" value="{{ fd.roll_number }}" placeholder="e.g. 22CSE001"/>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Full Name <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" name="name" value="{{ fd.name }}" required maxlength="100"/>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Email <span class="text-danger">*</span></label>
+          <input type="email" class="form-control" name="email" value="{{ fd.email }}" required maxlength="120"/>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Phone <span class="text-danger">*</span></label>
+          <input type="tel" class="form-control" name="phone" value="{{ fd.phone }}" required/>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Date of Birth</label>
+          <input type="date" class="form-control" name="dob" value="{{ fd.dob }}"/>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Gender</label>
+          <select class="form-select" name="gender">
+            <option value="">— Select —</option>
+            {% for g in genders %}<option value="{{ g }}" {% if fd.gender==g %}selected{% endif %}>{{ g }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="col-md-8">
+          <label class="form-label">Address</label>
+          <textarea class="form-control" name="address" rows="2" maxlength="500">{{ fd.address }}</textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ACADEMIC DETAILS ── -->
+  <div class="card shadow-sm mb-3">
+    <div class="card-header bg-success text-white fw-semibold"><i class="bi bi-journal-bookmark-fill"></i> Academic Details</div>
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label">Department <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" name="department" value="{{ fd.department }}" list="deptList" required maxlength="80"/>
+          <datalist id="deptList">{% for d in departments %}<option value="{{ d }}">{% endfor %}</datalist>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Course</label>
+          <select class="form-select" name="course">
+            <option value="">— Select —</option>
+            {% for c in courses %}<option value="{{ c }}" {% if fd.course==c %}selected{% endif %}>{{ c }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Year <span class="text-danger">*</span></label>
+          <select class="form-select" name="year" required>
+            <option value="">—</option>
+            {% for y in years %}<option value="{{ y }}" {% if fd.year==y %}selected{% endif %}>{{ y }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Semester</label>
+          <select class="form-select" name="semester">
+            <option value="">—</option>
+            {% for s in semesters %}<option value="{{ s }}" {% if fd.semester==s %}selected{% endif %}>{{ s }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Section</label>
+          <input type="text" class="form-control" name="section" value="{{ fd.section }}" maxlength="10" placeholder="A/B/C"/>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">CGPA</label>
+          <input type="number" class="form-control" name="cgpa" value="{{ fd.cgpa }}" step="0.01" min="0" max="10" placeholder="0.00–10.00"/>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Backlogs</label>
+          <input type="number" class="form-control" name="backlogs" value="{{ fd.backlogs }}" min="0" max="30"/>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Backlog Details</label>
+          <textarea class="form-control" name="backlog_details" rows="2" maxlength="500" placeholder="List subjects with backlogs (optional)">{{ fd.backlog_details }}</textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ATTENDANCE ── -->
+  <div class="card shadow-sm mb-3">
+    <div class="card-header bg-info text-white fw-semibold"><i class="bi bi-calendar-check-fill"></i> Attendance</div>
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label">Overall Attendance %</label>
+          <div class="input-group">
+            <input type="number" class="form-control" name="attendance_pct"
+                   value="{{ fd.attendance_pct }}" min="0" max="100" step="0.1" placeholder="e.g. 84.5"/>
+            <span class="input-group-text">%</span>
+          </div>
+          <small class="text-muted">Below 75% = Attendance Shortage warning.</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FEE DETAILS ── -->
+  <div class="card shadow-sm mb-3">
+    <div class="card-header bg-warning text-dark fw-semibold"><i class="bi bi-cash-coin"></i> Fee Details</div>
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label">Total Fee (₹)</label>
+          <input type="number" class="form-control" name="total_fee" id="total_fee"
+                 value="{{ fd.total_fee }}" min="0" step="0.01"/>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Amount Paid (₹)</label>
+          <input type="number" class="form-control" name="amount_paid" id="amount_paid"
+                 value="{{ fd.amount_paid }}" min="0" step="0.01"/>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Amount Due (₹)</label>
+          <input type="number" class="form-control bg-light" name="amount_due" id="amount_due"
+                 value="{{ fd.amount_due }}" readonly/>
+          <small class="text-muted">Auto-calculated.</small>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Payment Status</label>
+          <select class="form-select" name="payment_status">
+            {% for f in fee_statuses %}
+              <option value="{{ f }}" {% if fd.payment_status==f %}selected{% endif %}>{{ f }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PASSWORD (new students only) ── -->
+  {% if not (is_edit is defined and is_edit) %}
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-secondary text-white fw-semibold"><i class="bi bi-lock-fill"></i> Login Password</div>
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label">Password <span class="text-danger">*</span></label>
+          <div class="input-group">
+            <input type="password" class="form-control" id="pw" name="password" required minlength="8"/>
+            <button class="btn btn-outline-secondary" type="button" data-toggle-pw="pw"><i class="bi bi-eye"></i></button>
+          </div>
+          <small class="text-muted">Min 8 chars, a letter + a digit.</small>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Confirm Password <span class="text-danger">*</span></label>
+          <input type="password" class="form-control" id="pw2" name="confirm_password" required minlength="8"/>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="d-flex gap-2">
+    <button type="submit" class="btn btn-primary fw-semibold"><i class="bi bi-save-fill"></i> {{ submit_label }}</button>
+    <a href="{{ cancel_url }}" class="btn btn-outline-secondary">Cancel</a>
+  </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Auto-calculate amount due
+(function(){
+  const tf = document.getElementById('total_fee');
+  const ap = document.getElementById('amount_paid');
+  const ad = document.getElementById('amount_due');
+  if(!tf||!ap||!ad) return;
+  function calc(){ ad.value = Math.max(0, parseFloat(tf.value||0) - parseFloat(ap.value||0)).toFixed(2); }
+  tf.addEventListener('input', calc);
+  ap.addEventListener('input', calc);
+})();
+</script>
+{% endblock %}

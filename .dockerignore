@@ -1,0 +1,28 @@
+# ── Python cache ──────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+
+# ── Virtual environment (not needed inside the image) ─────────────────────────
+venv/
+env/
+.venv/
+
+# ── Secrets (never baked into the image) ──────────────────────────────────────
+.env
+
+# ── Git ───────────────────────────────────────────────────────────────────────
+.git/
+.gitignore
+
+# ── IDE / editor ──────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+
+# ── OS artefacts ──────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Local no-admin MySQL installation ─────────────────────────────────────────
+# (only present on the developer's machine, not needed in the image)
+mysql8.zip

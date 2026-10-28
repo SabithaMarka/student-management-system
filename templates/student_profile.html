@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}My Profile{% endblock %}
+{% block content %}
+<div class="d-flex align-items-center gap-3 mb-4">
+  <div class="avatar-circle">{{ s.name[0]|upper }}</div>
+  <div>
+    <h1 class="h3 mb-0">{{ s.name }}</h1>
+    <p class="text-muted mb-0">{{ s.student_id }}{% if s.roll_number %} &middot; {{ s.roll_number }}{% endif %}
+    &middot; {{ s.department }}</p>
+  </div>
+</div>
+
+<div class="alert alert-info small mb-4">
+  <i class="bi bi-info-circle-fill"></i>
+  This is a <strong>view-only</strong> profile. All information is managed by the college administrator. If you find any discrepancy, please contact the admin office.
+</div>
+
+<div class="row g-3">
+  <!-- Personal -->
+  <div class="col-lg-6">
+    <div class="card shadow-sm">
+      <div class="card-header bg-primary text-white fw-semibold"><i class="bi bi-person-fill"></i> Personal Information</div>
+      <ul class="list-group list-group-flush">
+        {% macro row(lbl,val) %}<li class="list-group-item d-flex justify-content-between"><span class="text-muted">{{ lbl }}</span><strong>{{ val or '—' }}</strong></li>{% endmacro %}
+        {{ row("Student ID",   s.student_id) }}
+        {{ row("Roll Number",  s.roll_number) }}
+        {{ row("Full Name",    s.name) }}
+        {{ row("Email",        s.email) }}
+        {{ row("Phone",        s.phone) }}
+        {{ row("Date of Birth", s.dob.strftime('%d %b %Y') if s.dob else None) }}
+        {{ row("Gender",       s.gender) }}
+        <li class="list-group-item"><span class="text-muted d-block mb-1">Address</span><span>{{ s.address or '—' }}</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Academic -->
+  <div class="col-lg-6">
+    <div class="card shadow-sm">
+      <div class="card-header bg-success text-white fw-semibold"><i class="bi bi-journal-bookmark-fill"></i> Academic Information</div>
+      <ul class="list-group list-group-flush">
+        {{ row("Department", s.department) }}
+        {{ row("Course",     s.course) }}
+        {{ row("Year",       "Year " ~ s.year if s.year else None) }}
+        {{ row("Semester",   "Semester " ~ s.semester if s.semester else None) }}
+        {{ row("Section",    s.section) }}
+        <li class="list-group-item d-flex justify-content-between"><span class="text-muted">CGPA</span>
+          <strong class="text-primary fs-5">{{ s.cgpa if s.cgpa is not none else '—' }}</strong></li>
+        <li class="list-group-item d-flex justify-content-between"><span class="text-muted">Backlogs</span>
+          <span class="badge {% if s.backlogs > 0 %}bg-danger{% else %}bg-success{% endif %} fs-6">{{ s.backlogs }}</span></li>
+        {% if s.backlog_details %}
+        <li class="list-group-item"><span class="text-muted d-block mb-1">Backlog Details</span>
+          <span class="text-danger small">{{ s.backlog_details }}</span></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+
+  <!-- Attendance -->
+  <div class="col-lg-6">
+    <div class="card shadow-sm">
+      <div class="card-header bg-info text-white fw-semibold"><i class="bi bi-calendar-check-fill"></i> Attendance</div>
+      <div class="card-body">
+        {% if s.attendance_pct is not none %}
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="text-muted">Overall Attendance</span>
+            <span class="fs-3 fw-bold {% if s.attendance_pct < 75 %}text-danger{% else %}text-success{% endif %}">
+              {{ s.attendance_pct }}%
+            </span>
+          </div>
+          <div class="progress mb-2" style="height:14px;">
+            <div class="progress-bar {% if s.attendance_pct < 75 %}bg-danger{% else %}bg-success{% endif %}"
+                 style="width:{{ s.attendance_pct }}%"></div>
+          </div>
+          {% if s.attendance_pct < 75 %}
+            <div class="alert alert-danger py-2 mb-0 small">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+              <strong>Attendance Shortage!</strong> Your attendance ({{ s.attendance_pct }}%) is below the required 75%. Please attend classes regularly.
+            </div>
+          {% else %}
+            <span class="badge bg-success"><i class="bi bi-check-circle-fill"></i> Good Attendance</span>
+          {% endif %}
+        {% else %}
+          <p class="text-muted mb-0">No attendance data recorded yet.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Fee -->
+  <div class="col-lg-6">
+    <div class="card shadow-sm">
+      <div class="card-header bg-warning text-dark fw-semibold"><i class="bi bi-cash-coin"></i> Fee Information</div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item d-flex justify-content-between"><span class="text-muted">Total Fee</span><strong>₹{{ "%.2f"|format(s.total_fee|float) }}</strong></li>
+        <li class="list-group-item d-flex justify-content-between"><span class="text-muted">Amount Paid</span><strong class="text-success">₹{{ "%.2f"|format(s.amount_paid|float) }}</strong></li>
+        <li class="list-group-item d-flex justify-content-between"><span class="text-muted">Amount Due</span><strong class="text-danger">₹{{ "%.2f"|format(s.amount_due|float) }}</strong></li>
+        <li class="list-group-item d-flex justify-content-between">
+          <span class="text-muted">Payment Status</span>
+          {% set sc = {'Fully Paid':'success','Half Paid':'warning','Partially Paid':'info','Due':'danger','Pending':'secondary'} %}
+          <span class="badge bg-{{ sc.get(s.payment_status,'secondary') }} fs-6">{{ s.payment_status }}</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

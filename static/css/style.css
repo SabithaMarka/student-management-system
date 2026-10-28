@@ -1,0 +1,48 @@
+/* =====================================================================
+   College Student Management System — CSS
+   ===================================================================== */
+body { background:#f4f6fb; min-height:100vh; display:flex; flex-direction:column; }
+.page-wrap { flex:1; min-height:calc(100vh - 56px - 44px); }
+
+/* ── Sidebar ── */
+.sidebar { width:220px; min-width:220px; background:#1a1f36; flex-shrink:0; }
+.sidebar-label { font-size:.65rem; text-transform:uppercase; letter-spacing:.08em; color:#5c6882; margin:.4rem 0 .2rem .5rem; font-weight:700; }
+.slink { display:flex; align-items:center; gap:.55rem; padding:.45rem .75rem; border-radius:.4rem; color:#a9b4c8; text-decoration:none; font-size:.875rem; transition:background .15s,color .15s; }
+.slink:hover { background:rgba(255,255,255,.08); color:#fff; }
+.slink.active { background:rgba(13,110,253,.25); color:#6ea8fe; font-weight:600; }
+.slink.text-danger { color:#f87171!important; }
+.slink.text-danger:hover { background:rgba(220,38,38,.15); }
+
+/* ── Cards ── */
+.card { border:none; border-radius:.75rem; box-shadow:0 2px 12px rgba(0,0,0,.06); }
+.card-header { font-weight:600; border-radius:.75rem .75rem 0 0!important; }
+
+/* ── Hero (landing) ── */
+.hero { background:linear-gradient(135deg,#0d6efd,#6610f2); color:#fff; }
+
+/* ── Stat tiles (admin dashboard) ── */
+.stat-tile { position:relative; overflow:hidden; border-radius:.75rem; padding:1.1rem 1rem; box-shadow:0 2px 12px rgba(0,0,0,.08); }
+.stat-val  { font-size:2rem; font-weight:700; line-height:1.1; }
+.stat-lbl  { font-size:.75rem; text-transform:uppercase; letter-spacing:.06em; opacity:.85; }
+.stat-ico  { position:absolute; right:10px; bottom:6px; font-size:2.8rem; opacity:.15; }
+
+/* ── Info cards (student dashboard) ── */
+.info-card { background:#fff; border-radius:.75rem; padding:1rem; border-left:4px solid #dee2e6; box-shadow:0 2px 8px rgba(0,0,0,.05); }
+.info-card-label { font-size:.7rem; text-transform:uppercase; letter-spacing:.06em; color:#6c757d; margin-bottom:.2rem; }
+.info-card-value { font-size:1.4rem; font-weight:700; word-break:break-word; }
+.info-card.border-primary { border-left-color:#0d6efd!important; }
+.info-card.border-success  { border-left-color:#198754!important; }
+.info-card.border-info     { border-left-color:#0dcaf0!important; }
+.info-card.border-secondary{ border-left-color:#6c757d!important; }
+
+/* ── Avatar ── */
+.avatar-circle { width:56px; height:56px; border-radius:50%; background:#0d6efd; color:#fff; display:flex; align-items:center; justify-content:center; font-size:1.5rem; font-weight:700; flex-shrink:0; }
+
+/* ── Tables ── */
+.table th { font-weight:600; }
+
+/* ── Footer ── */
+.footer { background:#1a1f36; color:#5c6882; flex-shrink:0; }
+
+/* ── Responsive ── */
+@media(max-width:991.98px){ .sidebar{ display:none!important; } main{ padding:1rem!important; } }

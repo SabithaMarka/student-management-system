@@ -1,0 +1,94 @@
+# ─────────────────────────────────────────────────────────────────────────────
+#  College Student Management System — Docker Compose
+#
+#  Services
+#  --------
+#  db   : MySQL 8.0 with a named volume so data persists across restarts
+#  web  : Flask application (depends on db being healthy)
+#
+#  Quick start
+#  -----------
+#  1. Copy .env.example to .env and set DB_PASSWORD / SECRET_KEY
+#  2. docker compose up --build
+#  3. Open http://localhost:5000
+#
+#  Teardown (keep data)   : docker compose down
+#  Teardown + wipe data   : docker compose down -v
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+
+  # ── MySQL database ──────────────────────────────────────────────────────────
+  db:
+    image: mysql:8.0
+    container_name: college_sms_db
+    restart: unless-stopped
+
+    environment:
+      MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASSWORD:-rootpassword}"
+      MYSQL_DATABASE:      "${DB_NAME:-student_management}"
+      MYSQL_USER:          "${DB_USER:-sms_user}"
+      MYSQL_PASSWORD:      "${DB_PASSWORD:-sms_password}"
+
+    volumes:
+      # Named volume — MySQL data survives container restarts
+      - db_data:/var/lib/mysql
+
+    ports:
+      # Expose MySQL locally so you can connect with a GUI tool (optional).
+      # Remove this block if you do not need direct access.
+      - "3307:3306"
+
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost",
+             "-u", "root", "--password=${DB_ROOT_PASSWORD:-rootpassword}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
+
+    networks:
+      - sms_net
+
+  # ── Flask web application ───────────────────────────────────────────────────
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: college_sms_web
+    restart: unless-stopped
+
+    environment:
+      # Flask
+      SECRET_KEY:      "${SECRET_KEY:-docker-secret-change-me}"
+      FLASK_ENV:       "${FLASK_ENV:-production}"
+      FLASK_DEBUG:     "0"
+      FLASK_RUN_HOST:  "0.0.0.0"
+      FLASK_RUN_PORT:  "5000"
+
+      # Database — must match the db service above
+      DB_HOST:     "db"
+      DB_PORT:     "3306"
+      DB_NAME:     "${DB_NAME:-student_management}"
+      DB_USER:     "${DB_USER:-sms_user}"
+      DB_PASSWORD: "${DB_PASSWORD:-sms_password}"
+
+    ports:
+      - "5000:5000"
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+    networks:
+      - sms_net
+
+# ── Named volumes ───────────────────────────────────────────────────────────
+volumes:
+  db_data:
+    driver: local
+
+# ── Networks ─────────────────────────────────────────────────────────────────
+networks:
+  sms_net:
+    driver: bridge
