@@ -4,13 +4,13 @@ pipeline {
     stages {
         stage('Install Dependencies') {
             steps {
-                bat 'py -m pip install -r requirements.txt'
+                bat '"C:\\Users\\sabit\\AppData\\Local\\Programs\\Python\\Python315\\python.exe" -m pip install -r requirements.txt'
             }
         }
 
         stage('Run Application') {
             steps {
-                bat 'py app.py'
+                bat '"C:\\Users\\sabit\\AppData\\Local\\Programs\\Python\\Python315\\python.exe" app.py'
             }
         }
     }
