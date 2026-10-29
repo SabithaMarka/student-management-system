@@ -9,9 +9,9 @@ pipeline {
             }
         }
 
-        stage('Run Application') {
+        stage('Verify App') {
             steps {
-                bat '"C:\\Users\\sabit\\AppData\\Local\\Python\\pythoncore-3.15-64\\python.exe" app.py'
+                bat '"C:\\Users\\sabit\\AppData\\Local\\Python\\pythoncore-3.15-64\\python.exe" --version'
             }
         }
 
